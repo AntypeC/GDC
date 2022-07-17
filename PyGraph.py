@@ -65,7 +65,12 @@ class Entry_gui:
         self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
         self.source.delete("1.0", "end")
         x, y = self.generate_model()
-        self.graph_plt(x, y)
+        if 'x' in self.expr:
+            new_line = "\n"
+            print('Domain: ', f"{new_line} {np.array2string(x, precision=2, floatmode='fixed')}", '\nRange: ', f"{new_line} {np.array2string(y, precision=2, floatmode='fixed')}")
+            self.graph_plt(x, y)
+        else:
+            self.source.insert(tk.END, str(y))
 
     def clearButtonFunction(self, *kwargs):
         self.source.delete('1.0', tk.END)
@@ -195,7 +200,7 @@ class Entry_gui:
         # step=0.001
 
         self.expr = self.expr.replace("\n", '')
-        print(self.expr)
+        print('Formula: \n', self.expr)
         x = np.array(range(domain_range)) # set range
         # x = np.arange(0,domain_range)*step+start
         y = eval(self.expr)
