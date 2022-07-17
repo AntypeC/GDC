@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from math import sin, cos, tan
+import os
+import random
 import tkinter as tk
 
 class Entry_gui:
@@ -65,11 +66,15 @@ class Entry_gui:
         self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
         self.source.delete("1.0", "end")
         x, y = self.generate_model()
+        new_line = "\n"
+        self.expr = self.expr.replace(new_line, '')
+        print('\nInput: \n', self.expr)
+        print('\nOutput: ')
         if 'x' in self.expr:
-            new_line = "\n"
-            print('Domain: ', f"{new_line} {np.array2string(x, precision=2, floatmode='fixed')}", '\nRange: ', f"{new_line} {np.array2string(y, precision=2, floatmode='fixed')}")
+            print(' Domain: ', f"{new_line} {np.array2string(x, precision=2, floatmode='fixed')}", '\n Range: ', f"{new_line} {np.array2string(y, precision=2, floatmode='fixed')}")
             self.graph_plt(x, y)
         else:
+            print(f' {y}')
             self.source.insert(tk.END, str(y))
 
     def clearButtonFunction(self, *kwargs):
@@ -199,11 +204,20 @@ class Entry_gui:
         # start=0
         # step=0.001
 
-        self.expr = self.expr.replace("\n", '')
-        print('Formula: \n', self.expr)
         x = np.array(range(domain_range)) # set range
         # x = np.arange(0,domain_range)*step+start
-        y = eval(self.expr)
+
+        random_response = ['smh...', 'smh...', 'smh...', 'smh...', "I was today years old when I realized I didn't like you.", "Someday you'll go far. And I really hope you stay there.", 'QUIT THIS !!']
+        zero_div_error_response = ['Division by zero is not allowed.', "Zero-based division is not permitted.", "It is not permitted to divide by zero.", "It is forbidden to divide by zero."]
+        random.shuffle(random_response)
+        random.shuffle(zero_div_error_response)
+        
+        try:
+            y = eval(self.expr)
+        except ZeroDivisionError:
+            y = zero_div_error_response[0]
+        except NameError or SyntaxError:
+            y = random_response[0]
         return x, y
 
     def graph_plt(self, x, y):
