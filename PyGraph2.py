@@ -5,6 +5,8 @@ import os
 import random
 import tkinter as tk
 
+# PyGraph2.py, a better, more secure implementation of PyGraph.py
+
 class Entry_gui:
     def __init__(self, master):
         self.master = master
