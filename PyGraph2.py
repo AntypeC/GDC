@@ -5,6 +5,7 @@ import os
 import random
 import tkinter as tk
 
+
 class Entry_gui:
     def __init__(self, master):
         self.master = master
@@ -17,6 +18,9 @@ class Entry_gui:
         self.source.config(font=("Courier"))
 
         self.btn_layout()
+    
+    def parse(self, *kwargs):
+        return 'break'
 
     def zeroButtonFunction(self, *kwargs): # number 0-9
         self.source.insert(tk.END, '0')
@@ -64,6 +68,7 @@ class Entry_gui:
         self.source.insert(tk.END, '.')
 
     def equalButtonFunction(self, *kwargs):
+        global random_response
         new_line = "\n"
         random_response = ['smh...', 'smh...', 'smh...', 'smh...', "I was today years old when I realized I didn't like you.", "Someday you'll go far. And I really hope you stay there.", 'QUIT THIS !!']
         self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
@@ -72,6 +77,7 @@ class Entry_gui:
 
         chars = ' 0123456789+-*/.()'
         isEquation = False
+        isContinuous = False
         intersection = []
         difference = []
 
@@ -81,48 +87,86 @@ class Entry_gui:
             if i not in intersection:
                 difference.append(i) # append every element inside self.expr that isn't inside chars
 
+        indices = len(difference)-1
+
         print('\nInput: ', new_line, self.expr)
         print('\nOutput: ')
 
         # import differences (key) for more unspecified continuous equations
+        trig_end = ['n', 's']
+        five_step_list = ['n', 'x']
+        two_step_list = ['n', 'p', 's', 'i', 'n', 'n', 'p', 'c', 'o', 's', 'n', 'p', 't', 'a', 'n', 'x']
+
+        def multiples(value, length):
+            return [*range(value, length*value+1, value)]
 
         if difference == []: # condition 2
             isEquation = True
+            isContinuous = False
         elif difference == ['x']: # condition 1
             isEquation = True
+            isContinuous = True
         elif difference == ['n', 'p', 's', 'i', 'n']: # condition 2
             isEquation = True
+            isContinuous = False
         elif difference == ['n', 'p', 'c', 'o', 's']: # condition 2
             isEquation = True
+            isContinuous = False
         elif difference == ['n', 'p', 't', 'a', 'n']: # condition 2
             isEquation = True
+            isContinuous = False
         elif difference == ['n', 'p', 's', 'i', 'n', 'x']: #condition 1
             isEquation = True
+            isContinuous = True
         elif difference == ['n', 'p', 'c', 'o', 's', 'x']: #condition 1
             isEquation = True
+            isContinuous = True
         elif difference == ['n', 'p', 't', 'a', 'n', 'x']: #condition 1
             isEquation = True
-        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 's', 'i', 'n', 'x']: #condition 2
+            isContinuous = True
+        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 's', 'i', 'n', 'x']: #condition 1
             isEquation = True
-        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 'c', 'o', 's', 'x']: #condition 2
+            isContinuous = True
+        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 'c', 'o', 's', 'x']: #condition 1
             isEquation = True
-        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 't', 'a', 'n', 'x']: #condition 2
+            isContinuous = True
+        elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 't', 'a', 'n', 'x']: #condition 1
             isEquation = True
+            isContinuous = True
+        elif difference[0] == 'n' and difference[-1] == 'x': # big boi
+            for n in multiples(5, int(indices/5)):
+                if difference[n] in five_step_list:
+                    for i in multiples(2, int(indices/2)):
+                        if difference[i] in two_step_list:
+                            isEquation = True
+                            isContinuous = True
+                        else:
+                            pass
+                else:
+                    pass
+        elif difference[0] == 'n' and difference[-1] in trig_end:
+            for n in multiples(5, int(indices/5)):
+                if difference[n] == 'n':
+                    for i in multiples(2, int(indices/2)):
+                        if difference[i] in two_step_list:
+                            isEquation = True
+                        else:
+                            pass
+                else:
+                    pass
         else:
             pass
         
-        if isEquation is True and difference != [] and difference != ['n', 'p', 's', 'i', 'n'] and difference != ['n', 'p', 'c', 'o', 's'] and difference != ['n', 'p', 't', 'a', 'n']:
+        if isEquation is True and isContinuous is True:
             x, y = self.generate_model()
-            print(new_line, 'Domain: ', f"{new_line} {np.array2string(x, precision=2, floatmode='fixed')}", new_line, 'Range: ', f"{new_line} {np.array2string(y, precision=2, floatmode='fixed')}")
+            print(' Domain: ', f"{new_line} {np.array2string(x, precision=2, floatmode='fixed')}", new_line, 'Range: ', f"{new_line} {np.array2string(y, precision=2, floatmode='fixed')}")
             self.graph_plt(x, y)
         elif isEquation is True:
             x, y = self.generate_model()
             print(f' {y}')
             self.source.insert(tk.END, str(y))
         else:
-            random.shuffle(random_response)
-            print(random_response[0])
-            self.source.insert(tk.END, random_response[0])
+            self.random_response()
         
         # print('\nDiagnostics:')
         # print(' intersection is ', intersection)
@@ -160,6 +204,8 @@ class Entry_gui:
         self.backButton.place_forget()
         
     def btn_layout(self):
+        self.source.bind('<Return>', self.parse)
+
         oneButton = tk.Button(self.master, text="1", width=10, height=5)
         oneButton.place(x=10, y=50)
         oneButton.bind('<Button-1>', self.oneButtonFunction)
@@ -253,16 +299,32 @@ class Entry_gui:
         self.backButton.bind('<Button-1>', self.backButtonFunction)
 
     def generate_model(self, domain_range=50): 
-        x = np.array(range(domain_range))
+        x = np.linspace(-domain_range, domain_range)
         zero_div_error_response = ['Division by zero is not allowed.', "Zero-based division is not permitted.", "It is not permitted to divide by zero.", "It is forbidden to divide by zero."] 
         random.shuffle(zero_div_error_response)
         try:
             y = eval(self.expr)
         except ZeroDivisionError:
             y = zero_div_error_response[0]
+        except Exception:
+            self.random_response()
         return x, y
+    
+    def random_response(self):
+        random.shuffle(random_response)
+        print(random_response[0])
+        self.source.insert(tk.END, random_response[0])
 
     def graph_plt(self, x, y):
+        # x = np.linspace(0.2,10,100)
+        # fig, ax = plt.subplots()
+        # ax.plot(x, 1/x)
+        # ax.plot(x, np.log(x))
+        # ax.set_aspect('equal')
+        # ax.grid(True, which='both')
+
+        # ax.axhline(y=0, color='k')
+        # ax.axvline(x=0, color='k')
         plt.style.use('dark_background')
         plt.xlabel('x')
         plt.ylabel('f(x)')
