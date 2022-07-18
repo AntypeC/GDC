@@ -1,7 +1,6 @@
-from ast import operator
 import matplotlib.pyplot as plt
+from transformers import pipeline
 import numpy as np
-import os
 import random
 import tkinter as tk
 
@@ -68,12 +67,24 @@ class Entry_gui:
         self.source.insert(tk.END, '.')
 
     def equalButtonFunction(self, *kwargs):
-        global random_response
         new_line = "\n"
-        random_response = ['smh...', 'smh...', 'smh...', 'smh...', "I was today years old when I realized I didn't like you.", "Someday you'll go far. And I really hope you stay there.", 'QUIT THIS !!']
         self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
-        self.expr = self.expr.replace(new_line, '')
         self.source.delete("1.0", "end")
+        print('\nInput: ', new_line, self.expr)
+        self.expr = self.expr.replace(new_line, "").lower()
+        convert_list = {
+            "sin(": "np.sin(",
+            "cos(": "np.cos(",
+            "tan(": "np.tan("
+        }
+        if "np.sin" not in self.expr and "np.cos" not in self.expr and "np.tan" not in self.expr:
+            if "sin" in self.expr or "cos" in self.expr or "tan" in self.expr:
+                for np_func, func in convert_list.items():
+                    self.expr = self.expr.replace(np_func, func)
+            else:
+                pass
+        else:
+            pass
 
         chars = ' 0123456789+-*/.()'
         isEquation = False
@@ -89,7 +100,6 @@ class Entry_gui:
 
         indices = len(difference)-1
 
-        print('\nInput: ', new_line, self.expr)
         print('\nOutput: ')
 
         # import differences (key) for more unspecified continuous equations
@@ -103,9 +113,18 @@ class Entry_gui:
         if difference == []: # condition 2
             isEquation = True
             isContinuous = False
-        elif difference == ['x']: # condition 1
-            isEquation = True
-            isContinuous = True
+        elif difference[0] == 'x': # condition 1
+            count = 0
+            _count = 0
+            for i in difference:
+                count +=1
+                if i == 'x':
+                    _count +=1
+            if count == _count:
+                isEquation = True
+                isContinuous = True
+            else:
+                print(count, _count)
         elif difference == ['n', 'p', 's', 'i', 'n']: # condition 2
             isEquation = True
             isContinuous = False
@@ -165,8 +184,8 @@ class Entry_gui:
             x, y = self.generate_model()
             print(f' {y}')
             self.source.insert(tk.END, str(y))
-        else:
-            self.random_response()
+        elif isEquation is False:
+            self.dump_response(self.expr)
         
         # print('\nDiagnostics:')
         # print(' intersection is ', intersection)
@@ -189,13 +208,13 @@ class Entry_gui:
         self.backButton.place(x=280, y=450)
 
     def sinButtonFunction(self, *kwargs):
-        self.source.insert(tk.END, 'np.sin(')
+        self.source.insert(tk.END, 'sin(')
 
     def cosButtonFunction(self, *kwargs):
-        self.source.insert(tk.END, 'np.cos(')
+        self.source.insert(tk.END, 'cos(')
 
     def tanButtonFunction(self, *kwargs):
-        self.source.insert(tk.END, 'np.tan(')
+        self.source.insert(tk.END, 'tan(')
 
     def backButtonFunction(self, *kwargs):
         self.sinButton.place_forget()
@@ -303,35 +322,47 @@ class Entry_gui:
         zero_div_error_response = ['Division by zero is not allowed.', "Zero-based division is not permitted.", "It is not permitted to divide by zero.", "It is forbidden to divide by zero."] 
         random.shuffle(zero_div_error_response)
         try:
-            y = eval(self.expr)
+            if self.expr != "...":
+                y = eval(self.expr)
+            else:
+                y = "..."
         except ZeroDivisionError:
             y = zero_div_error_response[0]
         except Exception:
-            self.random_response()
+            self.dump_response(self.expr)
         return x, y
     
-    def random_response(self):
-        random.shuffle(random_response)
-        print(random_response[0])
-        self.source.insert(tk.END, random_response[0])
+    def dump_response(self, prompt):
+        # generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
+        # generator = pipeline(task="text-generation")
+        # res = generator(prompt, max_length=20, do_sample=True, temperature=0.9)
+        # print(res[0]['generated_text'])
+        # self.source.insert(tk.END, res[0]['generated_text'])
+        print("...")
+        self.source.insert(tk.END, "...")
+
 
     def graph_plt(self, x, y):
-        # x = np.linspace(0.2,10,100)
-        # fig, ax = plt.subplots()
-        # ax.plot(x, 1/x)
-        # ax.plot(x, np.log(x))
-        # ax.set_aspect('equal')
-        # ax.grid(True, which='both')
-
-        # ax.axhline(y=0, color='k')
-        # ax.axvline(x=0, color='k')
+        fig = plt.figure()    
         plt.style.use('dark_background')
         plt.xlabel('x')
         plt.ylabel('f(x)')
-        plt.grid()
-        plt.plot(x, y)
-        plt.savefig(f"history/{self.expr}_graph.png", format="png", dpi=1200)
+        plt.plot(x, y, 'go-')
+        plt.scatter(0, 0)
+        plt.grid(True)
+        try:
+            plt.savefig(f"history/{self.expr}_graph.png", format="png", dpi=1200)
+        except FileNotFoundError:
+            pass
         plt.show()
+        # fig = plt.figure()    
+        # x = np.array(x_range)
+        # y = eval(formula)
+        # print(y)
+        # plt.plot(x, y, 'go-')
+        # plt.scatter(0,0)
+        # plt.grid(True)
+        # plt.show()
 
 
 root = tk.Tk()
