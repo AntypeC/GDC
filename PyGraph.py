@@ -1,13 +1,6 @@
-<<<<<<< HEAD
 import matplotlib.pyplot as plt
 from transformers import pipeline
 import numpy as np
-=======
-from ast import operator
-import matplotlib.pyplot as plt
-import numpy as np
-import os
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
 import random
 import tkinter as tk
 
@@ -74,7 +67,6 @@ class Entry_gui:
         self.source.insert(tk.END, '.')
 
     def equalButtonFunction(self, *kwargs):
-<<<<<<< HEAD
         new_line = "\n"
         self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
         self.source.delete("1.0", "end")
@@ -85,22 +77,26 @@ class Entry_gui:
             "cos(": "np.cos(",
             "tan(": "np.tan("
         }
-        if "np.sin" not in self.expr and "np.cos" not in self.expr and "np.tan" not in self.expr:
-            if "sin" in self.expr or "cos" in self.expr or "tan" in self.expr:
-                for np_func, func in convert_list.items():
-                    self.expr = self.expr.replace(np_func, func)
+        convert_list2 = {
+            "arcsin(": "np.arcsin(",
+            "arccos(": "np.arccos(",
+            "arctan(": "np.arctan("
+        }
+        if "np.arcsin(" not in self.expr and "np.arccos(" not in self.expr and "np.arctan(" not in self.expr:
+            if "arcsin(" not in self.expr and "arccos(" not in self.expr and "arctan(" not in self.expr:
+                if "np.sin(" not in self.expr and "np.cos(" not in self.expr and "np.tan(" not in self.expr:
+                    if "sin(" in self.expr or "cos(" in self.expr or "tan(" in self.expr:
+                        for np_func, func in convert_list.items():
+                            self.expr = self.expr.replace(np_func, func)
+                    else:
+                        pass
+                else:
+                    pass
             else:
-                pass
+                for np_func2, func2 in convert_list2.items():
+                    self.expr = self.expr.replace(np_func2, func2)
         else:
             pass
-=======
-        global random_response
-        new_line = "\n"
-        random_response = ['smh...', 'smh...', 'smh...', 'smh...', "I was today years old when I realized I didn't like you.", "Someday you'll go far. And I really hope you stay there.", 'QUIT THIS !!']
-        self.expr = self.source.get("1.0", tk.END) # A sin (B(x - C)) + D
-        self.expr = self.expr.replace(new_line, '')
-        self.source.delete("1.0", "end")
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
 
         chars = ' 0123456789+-*/.()'
         isEquation = False
@@ -116,10 +112,6 @@ class Entry_gui:
 
         indices = len(difference)-1
 
-<<<<<<< HEAD
-=======
-        print('\nInput: ', new_line, self.expr)
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
         print('\nOutput: ')
 
         # import differences (key) for more unspecified continuous equations
@@ -133,7 +125,6 @@ class Entry_gui:
         if difference == []: # condition 2
             isEquation = True
             isContinuous = False
-<<<<<<< HEAD
         elif difference[0] == 'x': # condition 1
             count = 0
             _count = 0
@@ -146,11 +137,6 @@ class Entry_gui:
                 isContinuous = True
             else:
                 print(count, _count)
-=======
-        elif difference == ['x']: # condition 1
-            isEquation = True
-            isContinuous = True
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
         elif difference == ['n', 'p', 's', 'i', 'n']: # condition 2
             isEquation = True
             isContinuous = False
@@ -178,6 +164,15 @@ class Entry_gui:
         elif difference == ['n', 'p', 's', 'i', 'n', 'n', 'p', 't', 'a', 'n', 'x']: #condition 1
             isEquation = True
             isContinuous = True
+        elif difference == ['n', 'p', 'a', 'r', 'c', 's', 'i', 'n']: #condition 1
+            isEquation = True
+            isContinuous = False
+        elif difference == ['n', 'p', 'a', 'r', 'c', 'c', 'o', 's']: #condition 1
+            isEquation = True
+            isContinuous = False
+        elif difference == ['n', 'p', 'a', 'r', 'c', 't', 'a', 'n']: #condition 1
+            isEquation = True
+            isContinuous = False
         elif difference[0] == 'n' and difference[-1] == 'x': # big boi
             for n in multiples(5, int(indices/5)):
                 if difference[n] in five_step_list:
@@ -210,13 +205,8 @@ class Entry_gui:
             x, y = self.generate_model()
             print(f' {y}')
             self.source.insert(tk.END, str(y))
-<<<<<<< HEAD
         elif isEquation is False:
             self.dump_response(self.expr)
-=======
-        else:
-            self.random_response()
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
         
         # print('\nDiagnostics:')
         # print(' intersection is ', intersection)
@@ -239,7 +229,6 @@ class Entry_gui:
         self.backButton.place(x=280, y=450)
 
     def sinButtonFunction(self, *kwargs):
-<<<<<<< HEAD
         self.source.insert(tk.END, 'sin(')
 
     def cosButtonFunction(self, *kwargs):
@@ -247,15 +236,6 @@ class Entry_gui:
 
     def tanButtonFunction(self, *kwargs):
         self.source.insert(tk.END, 'tan(')
-=======
-        self.source.insert(tk.END, 'np.sin(')
-
-    def cosButtonFunction(self, *kwargs):
-        self.source.insert(tk.END, 'np.cos(')
-
-    def tanButtonFunction(self, *kwargs):
-        self.source.insert(tk.END, 'np.tan(')
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
 
     def backButtonFunction(self, *kwargs):
         self.sinButton.place_forget()
@@ -363,7 +343,6 @@ class Entry_gui:
         zero_div_error_response = ['Division by zero is not allowed.', "Zero-based division is not permitted.", "It is not permitted to divide by zero.", "It is forbidden to divide by zero."] 
         random.shuffle(zero_div_error_response)
         try:
-<<<<<<< HEAD
             if self.expr != "...":
                 y = eval(self.expr)
             else:
@@ -405,37 +384,6 @@ class Entry_gui:
         # plt.scatter(0,0)
         # plt.grid(True)
         # plt.show()
-=======
-            y = eval(self.expr)
-        except ZeroDivisionError:
-            y = zero_div_error_response[0]
-        except Exception:
-            self.random_response()
-        return x, y
-    
-    def random_response(self):
-        random.shuffle(random_response)
-        print(random_response[0])
-        self.source.insert(tk.END, random_response[0])
-
-    def graph_plt(self, x, y):
-        # x = np.linspace(0.2,10,100)
-        # fig, ax = plt.subplots()
-        # ax.plot(x, 1/x)
-        # ax.plot(x, np.log(x))
-        # ax.set_aspect('equal')
-        # ax.grid(True, which='both')
-
-        # ax.axhline(y=0, color='k')
-        # ax.axvline(x=0, color='k')
-        plt.style.use('dark_background')
-        plt.xlabel('x')
-        plt.ylabel('f(x)')
-        plt.grid()
-        plt.plot(x, y)
-        plt.savefig(f"history/{self.expr}_graph.png", format="png", dpi=1200)
-        plt.show()
->>>>>>> cc63a92bc73051938610d4bd3637e33b34c69d56
 
 
 root = tk.Tk()
