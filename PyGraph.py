@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from transformers import pipeline
 import numpy as np
 import random
 import tkinter as tk
@@ -354,11 +353,6 @@ class Entry_gui:
         return x, y
     
     def dump_response(self, prompt):
-        # generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
-        # generator = pipeline(task="text-generation")
-        # res = generator(prompt, max_length=20, do_sample=True, temperature=0.9)
-        # print(res[0]['generated_text'])
-        # self.source.insert(tk.END, res[0]['generated_text'])
         print("...")
         self.source.insert(tk.END, "...")
 
